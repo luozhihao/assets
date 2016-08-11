@@ -176,6 +176,7 @@ class MainChart extends Component {
 
         var chart = new Highcharts.Chart({
             chart: {
+                zoomType: 'y',
                 renderTo: chartId,
                 type: 'column'
             },

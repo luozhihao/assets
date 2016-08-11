@@ -4,7 +4,7 @@ import { Sider, MyTable, MainChart, Import } from './containers'
 
 export default (
     <Route path="/" component={Sider}>
-        <IndexRoute component={MyTable} />
+        <IndexRoute component={MainChart} />
         <Route path="MyTable" component={MyTable} />
         <Route path="MainChart" component={MainChart} />
         <Route path="Import" component={Import} />
