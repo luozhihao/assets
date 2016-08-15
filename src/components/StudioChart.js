@@ -11,7 +11,7 @@ const TabPane = Tabs.TabPane
 const Option = Select.Option
 const ButtonGroup = Button.Group
 
-class RoomChart extends Component {
+class StudioChart extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -21,11 +21,11 @@ class RoomChart extends Component {
             years: [],
             yearView2: '',
             monthView2: [],
-            releases: [],
-            releases2: '',
+            studios: [],
+            studios2: '',
             typeView2: '',
             areaView2: [],
-            releases3: '',
+            studios3: '',
             monthView3: [],
             products: [],
             productView3: '',
@@ -40,7 +40,7 @@ class RoomChart extends Component {
 
     // 获取查询条件
     getView2 = () => {
-        let request = new Request('/chart/release_index/', {
+        let request = new Request('/chart/studio_index/', {
             headers,
             method: 'GET',
             credentials: 'include'
@@ -49,13 +49,13 @@ class RoomChart extends Component {
         return fetch(request)
             .then((res) => { return res.json() })
             .then((data) => {
-                this.setState({years: data.years, releases: data.releases})
+                this.setState({years: data.years, studios: data.studios})
             })
     }
 
     // 渲染view1
     showView1 = () => {
-        let request = new Request('/chart/release_index/', {
+        let request = new Request('/chart/studio_index/', {
             headers,
             method: 'POST',
             credentials: 'include',
@@ -65,7 +65,7 @@ class RoomChart extends Component {
         return fetch(request)
             .then((res) => { return res.json() })
             .then((data) => {
-                this.randerChart('roomTotal', '发行部成本率', '成本率', 10, '%', data.overview, 1, '可点击', 'overview')
+                this.randerChart('studiosTotal', '工作室成本率', '成本率', 10, '%', data.overview, 1, '可点击', 'overview')
             })
     }
 
@@ -74,7 +74,7 @@ class RoomChart extends Component {
         if (event) {
             this.setState({
                 monthView2: this.props.form.getFieldValue('year'), 
-                releases2: event.category,
+                studios2: event.category,
                 typeView2: type,
                 view1: false, 
                 view2: true
@@ -83,13 +83,13 @@ class RoomChart extends Component {
             this.props.form.setFieldsValue({month2: []})
         }
 
-        let request = new Request('/chart/release_detail/', {
+        let request = new Request('/chart/studio_detail/', {
             headers,
             method: 'POST',
             credentials: 'include',
             body: JSON.stringify({
                 yearMonth: this.state.monthView2, 
-                release: this.state.releases2,
+                studio: this.state.studios2,
                 area: this.props.form.getFieldValue('area2'), 
                 type: this.state.typeView2
             })
@@ -98,9 +98,9 @@ class RoomChart extends Component {
         return fetch(request)
             .then((res) => { return res.json() })
             .then((data) => {
-                this.randerChart('roomProduct', '发行部成本率', '成本率', 10, '%', data.overview, 2, '不可点击')
-                this.randerChart('roomIncome', '发行部收入', '金额', null, '元', data.income, 2, '不可点击')
-                this.randerChart('roomPay', '发行部支出', '金额', null, '元', data.expenditure, 2, '可点击')
+                this.randerChart('studiosProduct', '工作室成本率', '成本率', 10, '%', data.overview, 2, '不可点击')
+                this.randerChart('studiosIncome', '工作室收入', '金额', null, '元', data.income, 2, '不可点击')
+                this.randerChart('studiosPay', '工作室支出', '金额', null, '元', data.expenditure, 2, '可点击')
             })
     }
 
@@ -108,7 +108,7 @@ class RoomChart extends Component {
     showView3 = (event) => {
         if (event) {
             this.setState({
-                releases3: this.state.releases2,
+                studios3: this.state.studios2,
                 productView3: event.category,
                 monthView3: this.state.monthView2,
                 areaView3: this.props.form.getFieldValue('area2'),
@@ -117,15 +117,15 @@ class RoomChart extends Component {
                 view3: true
             })
 
-            this.getProducts(this.state.releases2, 'first')
+            this.getProducts(this.state.studios2, 'first')
         }
 
-        let request = new Request('/chart/release_expenditure/', {
+        let request = new Request('/chart/studio_expenditure/', {
             headers,
             method: 'POST',
             credentials: 'include',
             body: JSON.stringify({
-                release: this.state.releases3,
+                studio: this.state.studios3,
                 yearMonth: this.state.monthView3, 
                 product: this.state.productView3,
                 area: this.state.areaView3,
@@ -136,13 +136,13 @@ class RoomChart extends Component {
         return fetch(request)
             .then((res) => { return res.json() })
             .then((data) => {
-                this.randerChart('roomPayDetails', '支出明细', '金额', null, '元', data.expenditure, 3, '不可点击')
+                this.randerChart('studiosPayDetails', '支出明细', '金额', null, '元', data.expenditure, 3, '不可点击')
             })
     }
 
     // 选择change
-    releaseChange = (value) => {
-        this.setState({releases2: value})
+    studioChange = (value) => {
+        this.setState({studios2: value})
     }
 
     monthChange = (value) => {
@@ -153,8 +153,8 @@ class RoomChart extends Component {
         this.setState({monthView3: value})
     }
 
-    releaseChange3 = (value) => {
-        this.setState({releases3: value})
+    studioChange3 = (value) => {
+        this.setState({studios3: value})
 
         this.getProducts(value)
     }
@@ -169,12 +169,12 @@ class RoomChart extends Component {
 
     // 动态获取产品
     getProducts = (value, type) => {
-        let request = new Request('/get_products_by_release/', {
+        let request = new Request('/get_products_by_studio/', {
             headers,
             method: 'POST',
             credentials: 'include',
             body: JSON.stringify({
-                release: value
+                studio: value
             })
         })
 
@@ -296,16 +296,16 @@ class RoomChart extends Component {
                     </div>
                     <div className={`${this.state.view2 ? 'show' : 'hide'}`}>
                         <FormItem
-                            label="发行部"
+                            label="工作室"
                         >
                             <Select 
-                                {...getFieldProps('releases2')}
+                                {...getFieldProps('studios2')}
                                 style={{ width: 150 }}
-                                value={this.state.releases2}
-                                onChange={this.releaseChange}
+                                value={this.state.studios2}
+                                onChange={this.studioChange}
                             >
                                 {
-                                    this.state.releases.map((e, i) => 
+                                    this.state.studios.map((e, i) => 
                                         <Option value={e} key={i}>{e}</Option>
                                     )
                                 }
@@ -350,16 +350,16 @@ class RoomChart extends Component {
                     </div>
                     <div className={`${this.state.view3 ? 'show' : 'hide'}`}>
                         <FormItem
-                            label="发行部"
+                            label="工作室"
                         >
                             <Select 
-                                {...getFieldProps('releases3')}
+                                {...getFieldProps('studios3')}
                                 style={{ width: 150 }}
-                                value={this.state.releases3}
-                                onChange={this.releaseChange3}
+                                value={this.state.studios3}
+                                onChange={this.studioChange3}
                             >
                                 {
-                                    this.state.releases.map((e, i) => 
+                                    this.state.studios.map((e, i) => 
                                         <Option value={e} key={i}>{e}</Option>
                                     )
                                 }
@@ -422,21 +422,21 @@ class RoomChart extends Component {
                     </div>
                 </Form>
                 <div className={`'chartGroup' ${this.state.view1 ? 'show' : 'hide'}`}>
-                    <div id="roomTotal" className="chart-box"></div>
+                    <div id="studiosTotal" className="chart-box"></div>
                 </div>
                 <div className={`'chartGroup' ${this.state.view2 ? 'show' : 'hide'}`}>
-                    <div id="roomProduct" className="chart-box"></div>
-                    <div id="roomIncome" className="chart-box"></div>
-                    <div id="roomPay" className="chart-box"></div>
+                    <div id="studiosProduct" className="chart-box"></div>
+                    <div id="studiosIncome" className="chart-box"></div>
+                    <div id="studiosPay" className="chart-box"></div>
                 </div>
                 <div className={`'chartGroup' ${this.state.view3 ? 'show' : 'hide'}`}>
-                    <div id="roomPayDetails" className="chart-box"></div>
+                    <div id="studiosPayDetails" className="chart-box"></div>
                 </div>
             </div>
         )
     }
 }
 
-RoomChart = Form.create()(RoomChart)
+StudioChart = Form.create()(StudioChart)
 
-export default RoomChart
+export default StudioChart

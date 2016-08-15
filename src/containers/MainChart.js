@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { Tabs } from 'antd'
 import RoomChart from '../components/RoomChart'
 import ProductChart from '../components/ProductChart'
+import StudioChart from '../components/StudioChart'
 
 const TabPane = Tabs.TabPane
 
@@ -18,6 +19,9 @@ class MainChart extends Component {
                 </TabPane>
                 <TabPane tab="发行部维度" key="2">
                     <RoomChart></RoomChart>
+                </TabPane>
+                <TabPane tab="工作室维度" key="3">
+                    <StudioChart></StudioChart>
                 </TabPane>
             </Tabs>
         )

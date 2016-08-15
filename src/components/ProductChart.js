@@ -48,10 +48,10 @@ class ProductChart extends Component {
         return fetch(request)
             .then((res) => { return res.json() })
             .then((data) => {
-                this.randerChart('costTotal', '总成本率', '成本率', '%', data.overview, 1, '可点击', 'overview')
-                this.randerChart('costGame', '游戏成本率', '成本率', '%', data.game, 1, '可点击', 'game')
-                this.randerChart('costMoblie', '移动成本率', '成本率', '%', data.mobile, 1, '可点击', 'mobile')
-                this.randerChart('costVR', 'VR成本率', '成本率', '%', data.vr, 1, '可点击', 'vr')
+                this.randerChart('costTotal', '总成本率', '成本率', 10, '%', data.overview, 1, '可点击', 'overview')
+                this.randerChart('costGame', '游戏成本率', '成本率', 10, '%', data.game, 1, '可点击', 'game')
+                this.randerChart('costMoblie', '移动成本率', '成本率', 10, '%', data.mobile, 1, '可点击', 'mobile')
+                this.randerChart('costVR', 'VR成本率', '成本率', 10, '%', data.vr, 1, '可点击', 'vr')
             })
     }
 
@@ -101,9 +101,9 @@ class ProductChart extends Component {
         return fetch(request)
             .then((res) => { return res.json() })
             .then((data) => {
-                this.randerChart('costProduct', '产品成本率', '成本率', '%', data.overview, 2, '不可点击')
-                this.randerChart('income', '产品收入', '金额', '元', data.income, 2, '不可点击')
-                this.randerChart('pay', '产品支出', '金额', '元', data.expenditure, 2, '可点击')
+                this.randerChart('costProduct', '产品成本率', '成本率', 10, '%', data.overview, 2, '不可点击')
+                this.randerChart('income', '产品收入', '金额', null, '元', data.income, 2, '不可点击')
+                this.randerChart('pay', '产品支出', '金额', null, '元', data.expenditure, 2, '可点击')
             })
     }
 
@@ -136,7 +136,7 @@ class ProductChart extends Component {
         return fetch(request)
             .then((res) => { return res.json() })
             .then((data) => {
-                this.randerChart('payDetails', '支出明细', '金额', '元', data.expenditure, 3, '不可点击')
+                this.randerChart('payDetails', '支出明细', '金额', null, '元', data.expenditure, 3, '不可点击')
             })
     }
 
@@ -171,7 +171,7 @@ class ProductChart extends Component {
     }
 
     // 绘图方法
-    randerChart = (chartId, title, yName, unit, data, level, clickable, type) => {
+    randerChart = (chartId, title, yName, yMax, unit, data, level, clickable, type) => {
         var _this = this
 
         var chart = new Highcharts.Chart({
@@ -191,6 +191,7 @@ class ProductChart extends Component {
             },
             yAxis: {
                 min: 0,
+                max: yMax,
                 title: {
                     text: yName
                 }
@@ -222,6 +223,19 @@ class ProductChart extends Component {
                                     }
                                 }
                             }
+                        }
+                    },
+                    dataLabels: {
+                        rotation: -90,
+                        inside: true,
+                        enabled: true,
+                        color: '#fff',
+                        style: {
+                            fontFamily: 'Verdana, sans-serif',
+                            textShadow: '0 0 3px black'
+                        },
+                        formatter: function() {
+                            return this.y > 10000 ? (this.y / 10000).toFixed(2) + ' 万元' : this.y.toFixed(2) + ' ' + unit
                         }
                     }
                 }
