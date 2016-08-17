@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { render } from 'react-dom'
 import { Link, IndexLink} from 'react-router'
+import 'fetch-polyfill'
 import 'whatwg-fetch'
+require('es6-promise').polyfill()
 
 import { Menu, Icon, Tooltip } from 'antd'
 const SubMenu = Menu.SubMenu

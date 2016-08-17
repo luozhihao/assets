@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import Highcharts from 'highcharts'
-import 'whatwg-fetch'
 import { Form, Button, Select, Tabs } from 'antd'
+import 'fetch-polyfill'
+import 'whatwg-fetch'
+require('es6-promise').polyfill()
 
 // 创建对象时设置初始化信息
 const headers = new Headers()
@@ -51,7 +53,7 @@ class ProductChart extends Component {
                 this.randerChart('costTotal', '总成本率', '成本率', 10, '%', data.overview, 1, '可点击', 'overview')
                 this.randerChart('costGame', '游戏成本率', '成本率', 10, '%', data.game, 1, '可点击', 'game')
                 this.randerChart('costMoblie', '移动成本率', '成本率', 10, '%', data.mobile, 1, '可点击', 'mobile')
-                this.randerChart('costVR', 'VR成本率', '成本率', 10, '%', data.vr, 1, '可点击', 'vr')
+                this.randerChart('costVR', 'VR成本率', '成本率', 10, '%', data.vr, 1, '可点击', 'vr', false)
             })
     }
 
@@ -66,7 +68,7 @@ class ProductChart extends Component {
         return fetch(request)
             .then((res) => { return res.json() })
             .then((data) => {
-                this.setState({years: data.years, products: data.products})
+                this.setState({years: data.years})
             })
     }
 
@@ -104,6 +106,7 @@ class ProductChart extends Component {
                 this.randerChart('costProduct', '产品成本率', '成本率', 10, '%', data.overview, 2, '不可点击')
                 this.randerChart('income', '产品收入', '金额', null, '元', data.income, 2, '不可点击')
                 this.randerChart('pay', '产品支出', '金额', null, '元', data.expenditure, 2, '可点击')
+                this.setState({products: data.products})
             })
     }
 
@@ -171,7 +174,7 @@ class ProductChart extends Component {
     }
 
     // 绘图方法
-    randerChart = (chartId, title, yName, yMax, unit, data, level, clickable, type) => {
+    randerChart = (chartId, title, yName, yMax, unit, data, level, clickable, type, labelInside = true) => {
         var _this = this
 
         var chart = new Highcharts.Chart({
@@ -199,7 +202,7 @@ class ProductChart extends Component {
             tooltip: {
                 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b>{point.y:.1f} ' + unit + '（' + clickable +'）</b></td></tr>',
+                    '<td style="padding:0"><b>{point.y:.2f} ' + unit + '（' + clickable +'）</b></td></tr>',
                 footerFormat: '</table>',
                 shared: true,
                 useHTML: true
@@ -226,8 +229,8 @@ class ProductChart extends Component {
                         }
                     },
                     dataLabels: {
-                        rotation: -90,
-                        inside: true,
+                        rotation: labelInside ? -90 : 0,
+                        inside: labelInside,
                         enabled: true,
                         color: '#fff',
                         style: {
@@ -396,18 +399,18 @@ class ProductChart extends Component {
                         </FormItem>
                     </div>
                 </Form>
-                <div className={`'chartGroup' ${this.state.view1 ? 'show' : 'hide'}`}>
+                <div className={`${this.state.view1 ? 'show' : 'hide'}`}>
                     <div id="costTotal" className="chart-box"></div>
                     <div id="costGame" className="chart-box"></div>
                     <div id="costMoblie" className="chart-box"></div>
                     <div id="costVR" className="chart-box"></div>
                 </div>
-                <div className={`'chartGroup' ${this.state.view2 ? 'show' : 'hide'}`}>
+                <div className={`${this.state.view2 ? 'show' : 'hide'}`}>
                     <div id="costProduct" className="chart-box"></div>
                     <div id="income" className="chart-box"></div>
                     <div id="pay" className="chart-box"></div>
                 </div>
-                <div className={`'chartGroup' ${this.state.view3 ? 'show' : 'hide'}`}>
+                <div className={`${this.state.view3 ? 'show' : 'hide'}`}>
                     <div id="payDetails" className="chart-box"></div>
                 </div>
             </div>

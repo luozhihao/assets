@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import Highcharts from 'highcharts'
-import 'whatwg-fetch'
 import { Form, Button, Select, Tabs } from 'antd'
+import 'fetch-polyfill'
+import 'whatwg-fetch'
+require('es6-promise').polyfill()
 
 // 创建对象时设置初始化信息
 const headers = new Headers()
@@ -421,15 +423,15 @@ class RoomChart extends Component {
                         </FormItem>
                     </div>
                 </Form>
-                <div className={`'chartGroup' ${this.state.view1 ? 'show' : 'hide'}`}>
+                <div className={`${this.state.view1 ? 'show' : 'hide'}`}>
                     <div id="roomTotal" className="chart-box"></div>
                 </div>
-                <div className={`'chartGroup' ${this.state.view2 ? 'show' : 'hide'}`}>
+                <div className={`${this.state.view2 ? 'show' : 'hide'}`}>
                     <div id="roomProduct" className="chart-box"></div>
                     <div id="roomIncome" className="chart-box"></div>
                     <div id="roomPay" className="chart-box"></div>
                 </div>
-                <div className={`'chartGroup' ${this.state.view3 ? 'show' : 'hide'}`}>
+                <div className={`${this.state.view3 ? 'show' : 'hide'}`}>
                     <div id="roomPayDetails" className="chart-box"></div>
                 </div>
             </div>
