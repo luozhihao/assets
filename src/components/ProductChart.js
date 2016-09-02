@@ -13,20 +13,30 @@ const TabPane = Tabs.TabPane
 const Option = Select.Option
 const ButtonGroup = Button.Group
 
+const areaData1 = ['中国']
+const areaData2 = ['北美', '俄罗斯', '华人', '东南亚', '日本', '台湾', '韩国', '欧州']
+
 class ProductChart extends Component {
     constructor(props) {
         super(props)
         this.state = {
             years: [],
-            rooms: [],
+            yearView1: [],
+            areaView1: '',
+            areaView12: [],
+            areaLists: [],
             products: [],
             yearView2: '',
             monthView2: [],
             typeView2: '',
-            areaView2: [],
+            areaView2: '',
+            areaView22: [],
+            areaLists2: [],
             monthView3: [],
             productView3: '',
-            areaView3: [],
+            areaView3: '',
+            areaView32: [],
+            areaLists3: [],
             view1: true,
             view2: false,
             view3: false
@@ -44,7 +54,11 @@ class ProductChart extends Component {
             headers,
             method: 'POST',
             credentials: 'include',
-            body: JSON.stringify({year: this.props.form.getFieldValue('year'), area: this.props.form.getFieldValue('area1')})
+            body: JSON.stringify({
+                year: this.state.yearView1, 
+                region: this.state.areaView1 ? [this.state.areaView1] : [], 
+                area: this.state.areaView12
+            })
         })
 
         return fetch(request)
@@ -76,14 +90,16 @@ class ProductChart extends Component {
     showView2 = (event, type) => {
         if (event) {
             this.setState({
-                yearView2: event.series.name,
+                yearView2: this.state.yearView1[0],
                 monthView2: [event.category],
                 typeView2: type,
-                areaView2: this.props.form.getFieldValue('area1'),
+                areaView2: this.state.areaView1,
+                areaView22: this.state.areaView12,
                 view1: false, 
                 view2: true
             })
 
+            this.areaGet(this.state.areaView1, {areaLists2: areaData1}, {areaLists2: areaData2})
             this.props.form.setFieldsValue({product2: []})
         }
 
@@ -93,8 +109,9 @@ class ProductChart extends Component {
             credentials: 'include',
             body: JSON.stringify({
                 year: this.state.yearView2, 
-                month: this.state.monthView2, 
-                area: this.state.areaView2, 
+                month: this.state.monthView2,
+                region: this.state.areaView2 ? [this.state.areaView2] : [],
+                area: this.state.areaView22, 
                 product: this.props.form.getFieldValue('product2'), 
                 type: this.state.typeView2
             })
@@ -117,10 +134,13 @@ class ProductChart extends Component {
                 productView3: event.category,
                 monthView3: this.state.monthView2,
                 areaView3: this.state.areaView2,
+                areaView32: this.state.areaView22,
                 view1: false, 
                 view2: false,
                 view3: true
             })
+
+            this.areaGet(this.state.areaView2, {areaLists3: areaData1}, {areaLists3: areaData2})
         }
 
         let request = new Request('/chart/product_expenditure/', {
@@ -129,8 +149,9 @@ class ProductChart extends Component {
             credentials: 'include',
             body: JSON.stringify({
                 year: this.state.yearView2, 
-                month: this.state.monthView3, 
-                area: this.state.areaView3, 
+                month: this.state.monthView3,
+                region: this.state.areaView3 ? [this.state.areaView3] : [],
+                area: this.state.areaView32, 
                 product: this.state.productView3, 
                 type: this.state.typeView2
             })
@@ -143,24 +164,72 @@ class ProductChart extends Component {
             })
     }
 
+    // 时间检测
+    dataSet = (value, area, name) => {
+        if (value.length > 1 && this.state[name].length) {
+            this.setState(area)
+        }
+    }
+
+    // 区域检测
+    areaSet = (value, date, name) => {
+        if (value.length && this.state[name].length > 1) {
+            this.setState(date)
+        }
+    }
+
+    // 区域变更
+    areaGet = (value, data1, data2) => {
+        value === '国内' ? this.setState(data1) : this.setState(data2)
+    }
+
     // 选择change
-    monthChange = (value) => {
+    yearChange = value => {
+        this.setState({yearView1: value})
+        this.dataSet(value, {areaView12: []}, 'areaView12')
+    }
+
+    areaChange1 = value => {
+        this.setState({areaView1: value, areaView12: []})
+        this.areaGet(value, {areaLists: areaData1}, {areaLists: areaData2})
+    }
+
+    areaChange12 = value => {
+        this.setState({areaView12: value})
+        this.areaSet(value, {yearView1: []}, 'yearView1')
+    }
+
+    monthChange2 = value => {
         this.setState({monthView2: value})
+        this.dataSet(value, {areaView22: []}, 'areaView22')
     }
 
-    areaChange = (value) => {
-        this.setState({areaView2: value})
+    areaChange2 = value => {
+        this.setState({areaView2: value, areaView22: []})
+        this.areaGet(value, {areaLists2: areaData1}, {areaLists2: areaData2})
     }
 
-    monthChange3 = (value) => {
+    areaChange22 = value => {
+        this.setState({areaView22: value})
+        this.areaSet(value, {monthView2: []}, 'monthView2')
+    }
+
+    monthChange3 = value => {
         this.setState({monthView3: value})
+        this.dataSet(value, {areaView32: []}, 'areaView32')
     }
 
-    areaChange3 = (value) => {
-        this.setState({areaView3: value})
+    areaChange3 = value => {
+        this.setState({areaView3: value, areaView32: []})
+        this.areaGet(value, {areaLists3: areaData1}, {areaLists3: areaData2})
     }
 
-    productChange3 = (value) => {
+    areaChange32 = value => {
+        this.setState({areaView32: value})
+        this.areaSet(value, {monthView3: []}, 'monthView3')
+    }
+
+    productChange3 = value => {
         this.setState({productView3: value})
     }
 
@@ -183,6 +252,7 @@ class ProductChart extends Component {
                 renderTo: chartId,
                 type: 'column'
             },
+            colors: ['#7cb5ec', '#f7a35c', '#90ed7d', '#8085e9', '#f15c80', '#e4d354', '#00BCD4', '#8d4653', '#91e8e1', '#009688'],
             title: {
                 text: title
             },
@@ -261,8 +331,10 @@ class ProductChart extends Component {
                                 {...getFieldProps('year')}
                                 multiple
                                 allowClear
+                                value={this.state.yearView1}
                                 style={{ width: 150 }}
                                 placeholder="请选择"
+                                onChange={this.yearChange}
                             >
                                 { this.state.years.map((e, i) =>
                                     <Option value={e} key={i}>{e}</Option>
@@ -270,16 +342,35 @@ class ProductChart extends Component {
                             </Select>
                         </FormItem>
                         <FormItem
-                            label="区域"
+                            label="区域一"
                         >
                             <Select 
                                 {...getFieldProps('area1')}
-                                multiple 
+                                value={this.state.areaView1}
+                                onChange={this.areaChange1}
                                 allowClear
                                 style={{ width: 150 }} 
                             >
                                 <Option value="国内">国内</Option>
                                 <Option value="海外">海外</Option>
+                            </Select>
+                        </FormItem>
+                        <FormItem
+                            label="区域二"
+                        >
+                            <Select 
+                                {...getFieldProps('area12')}
+                                value={this.state.areaView12}
+                                onChange={this.areaChange12}
+                                allowClear
+                                multiple
+                                style={{ width: 150 }} 
+                            >
+                                { 
+                                    this.state.areaLists.map((e, i) => 
+                                        <Option value={e} key={i}>{e}</Option>
+                                    )
+                                }
                             </Select>
                         </FormItem>
                         <FormItem>
@@ -296,7 +387,7 @@ class ProductChart extends Component {
                                 allowClear 
                                 style={{ width: 150 }}
                                 value={this.state.monthView2}
-                                onChange={this.monthChange}
+                                onChange={this.monthChange2}
                             >   
                                 {
                                     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((e, i) =>
@@ -322,18 +413,35 @@ class ProductChart extends Component {
                             </Select>
                         </FormItem>
                         <FormItem
-                            label="区域"
+                            label="区域一"
                         >
                             <Select 
                                 {...getFieldProps('area2')}
-                                multiple 
                                 allowClear
                                 style={{ width: 150 }}
                                 value={this.state.areaView2}
-                                onChange={this.areaChange}
+                                onChange={this.areaChange2}
                             >
                                 <Option value="国内">国内</Option>
                                 <Option value="海外">海外</Option>
+                            </Select>
+                        </FormItem>
+                        <FormItem
+                            label="区域二"
+                        >
+                            <Select 
+                                {...getFieldProps('area22')}
+                                value={this.state.areaView22}
+                                onChange={this.areaChange22}
+                                allowClear
+                                multiple
+                                style={{ width: 150 }} 
+                            >
+                                { 
+                                    this.state.areaLists2.map((e, i) => 
+                                        <Option value={e} key={i}>{e}</Option>
+                                    )
+                                }
                             </Select>
                         </FormItem>
                         <FormItem>
@@ -378,11 +486,10 @@ class ProductChart extends Component {
                             </Select>
                         </FormItem>
                         <FormItem
-                            label="区域"
+                            label="区域一"
                         >
                             <Select 
                                 {...getFieldProps('area3')}
-                                multiple 
                                 allowClear
                                 style={{ width: 150 }}
                                 value={this.state.areaView3}
@@ -390,6 +497,24 @@ class ProductChart extends Component {
                             >
                                 <Option value="国内">国内</Option>
                                 <Option value="海外">海外</Option>
+                            </Select>
+                        </FormItem>
+                        <FormItem
+                            label="区域二"
+                        >
+                            <Select 
+                                {...getFieldProps('area32')}
+                                value={this.state.areaView32}
+                                onChange={this.areaChange32}
+                                allowClear
+                                multiple
+                                style={{ width: 150 }} 
+                            >
+                                { 
+                                    this.state.areaLists3.map((e, i) => 
+                                        <Option value={e} key={i}>{e}</Option>
+                                    )
+                                }
                             </Select>
                         </FormItem>
                         <FormItem>

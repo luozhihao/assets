@@ -143,29 +143,29 @@ class StudioChart extends Component {
     }
 
     // 选择change
-    studioChange = (value) => {
+    studioChange = value => {
         this.setState({studios2: value})
     }
 
-    monthChange = (value) => {
+    monthChange = value => {
         this.setState({monthView2: value})
     }
 
-    monthChange3 = (value) => {
+    monthChange3 = value => {
         this.setState({monthView3: value})
     }
 
-    studioChange3 = (value) => {
+    studioChange3 = value => {
         this.setState({studios3: value})
 
         this.getProducts(value)
     }
 
-    productChange3 = (value) => {
+    productChange3 = value => {
         this.setState({productView3: value})
     }
 
-    areaChange3 = (value) => {
+    areaChange3 = value => {
         this.setState({areaView3: value})
     }
 
@@ -206,6 +206,7 @@ class StudioChart extends Component {
                 renderTo: chartId,
                 type: 'column'
             },
+            colors: ['#7cb5ec', '#f7a35c', '#90ed7d', '#8085e9', '#f15c80', '#e4d354', '#00BCD4', '#8d4653', '#91e8e1', '#009688'],
             title: {
                 text: title
             },
