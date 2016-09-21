@@ -1,5 +1,11 @@
 import React, { Component } from 'react'
 import { Button, Tabs, Upload, Icon, message, Card } from 'antd'
+import 'fetch-polyfill'
+import 'whatwg-fetch'
+require('es6-promise').polyfill()
+
+// 创建对象时设置初始化信息
+const headers = new Headers()
 
 const TabPane = Tabs.TabPane
 
@@ -8,12 +14,37 @@ class Import extends Component {
         super(props)
         this.state = {
             loading: false,
+            syncLoading: false,
             invalid: ['【操作说明】', '1、先下载excel模板']
         }
     }
 
+    // 下载模板
     download = () => {
         location.href='/file/template.xlsx'
+    }
+
+    // 同步收入数据
+    sync = () => {
+        let request = new Request('/excel/sync_income/', {
+            headers,
+            method: 'POST',
+            credentials: 'include'
+        })
+
+        this.setState({syncLoading: true})
+
+        return fetch(request)
+            .then((res) => { return res.json() })
+            .then((data) => {
+                if (data.code === 200) {
+                    message.success(data.msg)
+                } else {
+                    message.error(data.msg)
+                }
+
+                this.setState({syncLoading: false})
+            })
     }
 
     render() {
@@ -67,6 +98,10 @@ class Import extends Component {
                             &nbsp;
                             <Button type="ghost" icon="download" onClick={this.download}>
                                 下载模板
+                            </Button>
+                            &nbsp;
+                            <Button type="ghost" icon="reload" onClick={this.sync} loading={this.state.syncLoading}>
+                                同步收入数据
                             </Button>
                         </div>
                         <Card className="card-box">
